@@ -1,0 +1,40 @@
+
+.welcome{
+    margin: auto;
+    color: aqua;
+    letter-spacing: 2px;
+}
+
+h1:hover:hover{
+    color: red;
+    letter-spacing: 7px;
+}
+
+
+.register-form{
+    width: 35%;
+    margin: 60px auto;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px, rgb(51, 51, 51) 0px 0px 0px 3px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.register-form input{
+    width: 60%;
+    height: 30px;
+    border-color: aqua;
+    margin: 10px auto;
+    padding-left: 10px;
+}
+
+.register-form input:nth-child(8){
+    background-color: blue;
+    color: white;
+    border: none;
+    font-size: 15px;
+    margin-bottom: 20px;
+    cursor: pointer;
+}

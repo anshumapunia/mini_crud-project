@@ -1,0 +1,53 @@
+.welcome{
+    margin: auto;
+    color: aqua;
+    letter-spacing:2px;
+}
+
+h1:hover:hover{
+    color: red;
+    letter-spacing: 7px;
+}
+
+
+.login-form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 30%;
+    margin: 150px auto 100px auto;
+    text-align: center;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px, rgb(51, 51, 51) 0px 0px 0px 3px;
+}
+
+.login-form input{
+    width: 65%;
+    height: 30px;
+    border-color: aqua;
+    margin: 15px auto;
+   
+}
+
+.login-form input:nth-child(3){
+    background-color: blue;
+    color: white;
+    border: none;
+    font-size: 15px;
+}
+
+.login-form  > p{
+    color: black;
+}
+
+.login-form > a{
+    text-decoration: none;
+    color:blue;
+    padding-bottom: 10px;
+}
+
+.login-form > a:hover{
+    cursor: pointer;
+    text-decoration: underline;
+    color: red;
+}

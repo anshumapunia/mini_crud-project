@@ -31,9 +31,9 @@ app.listen(3000, async ()=>{
 
         console.log("connected to DB. Server running at 3000");
 
-    } catch (error) {
+    } catch (err) {
 
-        console.log(error);
+        console.log(err );
 
     }
 

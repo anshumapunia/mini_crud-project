@@ -1,205 +1,156 @@
-const  { Router } = require('express');
+const {Router} = require('express');
+
 
 const todoRouter = Router();
 
-const { TodoModel } = require('../models/todo.model');
+const {TodoModel} = require('../models/todo.model');
+
+todoRouter.post("/add", async(req,res)=>{
 
 
+    try{
 
-
-todoRouter.post("/add", async (req,res)=>{
-
-    // const {UserID,TaskName,isCompleted} = req.body;
-
-
-    try {
-        
         const todo = new TodoModel(req.body);
 
         await todo.save();
-
         res.status(200).send(todo)
 
-
-    } catch (error) {
-        
-        res.status(400).send({
-            "msg":error.message
-
-        })
-
     }
-
+    catch(err)
+    {
+        res.status(400).send({
+            "msg":err.message
+        })
+    }
 })
 
+todoRouter.get("/get", async(req,res)=>{
 
+    const {UserID} = req.body;
 
-todoRouter.get("/get" , async (req,res)=>{
+    let { TaskName, isCompleted, Page, Limit } = req.query;
 
-    const { UserID }  = req.body;
+    try{
 
-    let { TaskName , isCompleted , Page , Limit } = req.query;
+        TaskName = new RegExp(TaskName, 'i');
 
-    try {
+        if(isCompleted)
+        {
 
-        TaskName = new RegExp(TaskName , 'i');
-
-        if(isCompleted){
-
-            const todo = await TodoModel.find({UserID , TaskName , isCompleted}).skip(Limit*(Page-1)).limit(Limit);
+            const todo = await TodoModel.find({UserId, TaskName, isCompleted}).skip(Limit*(Page-1)).limit(Limit);
 
             res.status(200).send(todo)
 
+
         }
 
-        else{
-
-            const todo = await TodoModel.find({UserID ,TaskName}).skip(Limit*(Page-1)).limit(Limit);
+        else
+        {
+            const todo = await TodoModel.find({UserID, TaskName}).skip(Limit*(Page-1)).limit(Limit);
 
             res.status(200).send(todo);
-
         }
-        
-
-    } 
-    catch (error) {
-        
-        res.status(400).send({
-            "msg":error.message
-
-        })
-
     }
 
+    catch(err)
+    {
+        res.status(400).send({
+            "msg":err.message
+        })
+    }
 })
 
-
-
-
-todoRouter.get('/getone/:todoID', async (req,res)=>{
+todoRouter.get('/getone/:todoID', async(req,res)=>{
 
     const {todoID} = req.params
 
-
     const UserID = req.body.UserID
 
-    try {
-        
+    try
+    {
         const verifyTodo = await TodoModel.findOne({_id:todoID});
 
-        if(verifyTodo.UserID === UserID){
-
+        if(verifyTodo.UserID=== UserID)
+        {
             const todo = await TodoModel.findById({_id:todoID});
 
             res.status(200).send(todo);
-
-        }else{
-
-            res.status(400).send({"msg":"You can't able to get todo of other user"});
-            
         }
-
-    } catch (error) {
-
-        res.status(400).send({"error":error.message});  
-        
-    } 
-
+        else
+        {
+            res.status(400).send({"msg": "You can't able to get todo of other user"});
+        }
+    }
+    catch(err)
+    {
+        res.status(400).send({"err":err.meassage});
+    }
 })
-
-
 
 todoRouter.patch("/update/:todoID", async(req,res)=>{
 
+    const {todoID} = req.params;
 
-    const {todoID} =  req.params;
-
-    try {
-        
-        
+    try{
         const verifytodo = await TodoModel.findById({_id:todoID});
 
-        if(verifytodo.UserID === req.body.UserID){
+        if(verifytodo.UserID=== req.body.UserID)
+        {
+            await TodoModel.findByIDAndUpdate({_id:todoID},req.body);
 
-            await TodoModel.findByIdAndUpdate({_id:todoID},req.body);
-
-            const todo1 = await TodoModel.findById({_id:todoID});
+            const todo1= await TodoModel.findById({_id:todoID});
 
             res.status(200).send({
-
                 "msg": `todo ${todo1} has been updated.`
             }
-           );
-
+            );
         }
-
-        else{
-
+        else
+        {
             res.status(400).send({
-                "msg":"Unauthorized acess detected. Acees Denied"
+                "msg":"Unauthorized acess detected. Acess Denied"
             })
-
         }
-
-    } 
-    
-    catch (error) {
-        
-        res.status(400).send({
-            "msg":error.message
-
-        })
-
     }
-
+    catch(err)
+    {
+        res.status(400).send({
+            "msg":err.message
+        })
+    }
 })
 
-
-
-
 todoRouter.delete("/delete/:todoID", async(req,res)=>{
+     const {todoId} = req.params;
 
+     try
+     {
+        const todo = await TodoModel.findById({_id:todoId});
 
-    const {todoID} =  req.params;
+        if(todo.UserID===req.body.UserID)
+        {
+            await TodoModel.findByIDAndDelete({_id:todoID});
 
-    try {
-        
-        const todo = await TodoModel.findById({_id:todoID});
-
-        if(todo.UserID === req.body.UserID){
-
-            await TodoModel.findByIdAndDelete({_id:todoID});
-    
             res.status(200).send({
                 "msg":"Todo has been deleted."
             });
         }
-
-        else{
-
+        else
+        {
             res.status(400).send({
-                "msg":"Unauthorized acess detected. Acees Denied"
+                "msg" : "Unauthorized acess detected. Acess Denied"
             })
-
         }
+     }
 
-    } 
-    
-    catch (error) {
-        
+     catch(err)
+     {
         res.status(400).send({
-            "msg":error.message
-
+            "msg":err.meassage
         })
-
-    }
-
+     }
 })
 
-
-
 module.exports = {
-
     todoRouter
-
 }

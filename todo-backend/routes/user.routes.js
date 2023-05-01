@@ -1,8 +1,7 @@
-const { Router } = require('express');
-
+const {Router} = require('express');
 const userRouter = Router();
 
-const { UserModel } = require("../models/user.model");
+const {userModel, UserModel} = require("../models/user.model");
 
 const bcrypt = require('bcrypt');
 
@@ -10,170 +9,133 @@ const jwt = require('jsonwebtoken');
 
 require('dotenv').config()
 
-const { Auth } = require('../middleware/auth.middleware');
+const {Auth} = require('../middleware/auth.middleware')
 
-const { TodoModel } = require('../model/todo.model');
-
-
-
-userRouter.post("/register", async (req,res)=>{
+const {TodoModel} = require('../models/todo.model');
 
 
-    const {Email,Name,Password,Age,Location,Contact} = req.body;
+userRouter.post("/register",async (req,res)=>{
+
+    const {Email,Name,Password,Age,Location,Contact}= req.body;
 
     console.log(req.body);
 
-    bcrypt.hash(Password, 6 , async (err, hash) => {
+    bcrypt.hash(Password,6,async(err, hash)=>{
 
-        try {
+        try{
 
-            const user = new UserModel({Email, Name, Password:hash, Age, Location, Contact})
+            const user = new UserModel({Email,Name, Password:hash, Age, Location, Contact})
 
             await user.save()
-
             res.status(200).send(user)
-
-
-        } 
-        catch (error) {
-
-            res.status(400).send({"error":error.message})
-
         }
-
+        catch(err)
+        {
+            res.status(400).send({"err":err.message})
+        }
     });
 
 
+    
 })
 
-
-
-
-userRouter.post("/login", async (req,res)=>{
+userRouter.post("/login", async(req,res)=>{
 
     const {Email,Password} = req.body;
 
-    try {
-        
+    try{
         const user = await UserModel.findOne({Email});
         console.log(user)
-       
+        if(user)
+        {
+            bcrypt.compare(Password, user.Password , (err, result)=>{
 
-        if(user){
-
-            bcrypt.compare(Password , user.Password , (err,result)=>{
-
-                if(!result){
-
+                if(!result)
+                {
                     res.status(400).send({
-                        "msg":"Invaid Password"
+                        "msg" : "Invalid Password"
                     })
-
                 }
-                else{
-
+                else
+                {
                     res.status(200).send({
-
                         "msg":"Login Successfull",
-
-                        "token":jwt.sign( {UserID:user._id} , process.env.SecretKey , {expiresIn:'60m'})
-
+                        "token":jwt.sign({UserId:user._id},process.env.SecretKey, {expiresIn:'60m'})
+                        
                     })
-
                 }
-
             })
-
         }
-
-        else{
-
+        else
+        {
             res.status(400).send({
-            "msg":"Kindly Register First."
+                "msg":"Kindly Register First."
             })
-
         }
-
-    } catch (error) {
-
-        res.status(400).send({
-            "msg":error.message
-        })
-
     }
-
-
+    catch(err)
+    {
+        res.status(400).send({
+            "msg":err.message
+        })
+    }
 })
 
 
+userRouter.get('/get',Auth,async(req,res)=>{
 
+    const {UserID}= req.body;
 
-
-userRouter.get('/get', Auth, async (req,res)=>{
-
-    const {UserID} = req.body;
-
-    try {
-
+    try
+    {
         const user = await UserModel.findOne({_id:UserID});
 
-        if(user){
-
+        if(user)
+        {
             res.status(200).send(user);
 
-        }else{
-
-            res.status(404).send({"msg":"User Not Found"})
-
         }
-
-    } 
-    
-    catch (error) {
-
+        else
+        {
+            res.status(404).send({"msg":"User Not Found"})
+        }
+    }
+    catch(err)
+    {
         res.status(400).send(
-            {"error": error.message}
-            )
-        
+            {"error":err.message}
+        )
     }
 })
 
 
-
-
-
-userRouter.patch('/update', Auth, async (req,res)=>{
+userRouter.patch('/update',Auth, async(req,res)=>{
 
     const {UserID} = req.body;
 
-    try {
+    try
+    {
+        const verifyUser = await UserModel.findOne({_id:UserId});
 
-        const verifyUser = await UserModel.findOne({_id:UserID});
-
-        if(verifyUser){
-
-            await UserModel.findByIdAndUpdate({_id:UserID}, req.body);
+        if(verifyUser)
+        {
+            await UserModel.findByIdAndUpdate({_id:UserID},req.body);
 
             const user = await UserModel.findOne({_id:UserID});
 
-
             res.status(200).send(user);
-
-        }else{
+        }
+        else
+        {
 
             res.status(404).send('User Not Found');
-
         }
-
-    } 
-    catch (error) {
-
-        res.status(400).send({"error": error.message})
-
+    }
+    catch(err)
+    {
+        res.status(400).send({"err":err.message})
     }
 })
-
-
 
 
 userRouter.delete('/delete', Auth, async (req,res)=>{
@@ -207,9 +169,9 @@ userRouter.delete('/delete', Auth, async (req,res)=>{
 
     } 
     
-    catch (error) {
+    catch (err) {
 
-        res.status(400).send({"error": error.message})
+        res.status(400).send({"err": err.message})
 
     }
 })

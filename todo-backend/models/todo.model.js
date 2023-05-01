@@ -1,24 +1,19 @@
-
 const mongoose = require('mongoose');
 
 
 const todoSchema = mongoose.Schema({
 
-    UserID:{type:String , required:true},
-    TaskName:{type:String , required:true},
-    isCompleted : {type:Boolean , required:true}
-
-
+    UserID:{type:String, required:true},
+    TaskName:{type:String, required:true},
+    isCompleted:{type:Boolean, required:true}
 },
 
-    {versionKey:false}
 
+  {versionKey:false}
 )
 
+const TodoModel = mongoose.model("todo",todoSchema);
 
-const TodoModel = mongoose.model("todo", todoSchema);
-
-
-module.exports = {
+module.exports= {
     TodoModel
 }
